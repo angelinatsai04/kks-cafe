@@ -6,7 +6,8 @@ const cors = require('cors');
 require('dotenv').config();
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 5000;
+const HOST = '0.0.0.0';
 
 // Middleware
 app.use(cors());
@@ -217,7 +218,6 @@ app.delete('/api/drinks/:id', (req, res) => {
 app.use('/uploads', express.static(uploadsDir));
 
 // Start server
-app.listen(PORT, () => {
-    console.log(`🎯 KK's Cafe server running on port ${PORT}`);
-    console.log(`Visit: http://localhost:${PORT}`);
+app.listen(PORT, HOST, () => {
+    console.log(`KK's Cafe server running on http://${HOST}:${PORT}`);
 });
