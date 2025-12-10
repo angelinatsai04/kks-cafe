@@ -4,8 +4,7 @@ A beautiful, fully functional cafe menu website with image uploads and persisten
 
 ## Features
 
-✨ **Beautiful Design**
-- Elegant chrome and wood aesthetic
+✨ **Design**
 - Responsive design (mobile, tablet, desktop)
 - Smooth animations and transitions
 
