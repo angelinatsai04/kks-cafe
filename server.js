@@ -81,21 +81,42 @@ app.get('/api/drinks', (req, res) => {
     res.json(drinks);
 });
 
-// POST new drink with optional image
-app.post('/api/drinks', upload.single('image'), (req, res) => {
+// POST new drink with optional images
+app.post('/api/drinks', upload.array('images', 10), (req, res) => {
     try {
-        const { name, description } = req.body;
+        const { name, description, urlImages } = req.body;
         
         if (!name || !description) {
             return res.status(400).json({ error: 'Name and description are required' });
         }
 
         const drinks = readDrinks();
+        
+        // Combine uploaded files and URL images
+        let images = [];
+        if (req.files && req.files.length > 0) {
+            images = req.files.map(file => `/uploads/${file.filename}`);
+        }
+        
+        // Add URL images if provided
+        if (urlImages) {
+            try {
+                const parsedUrls = JSON.parse(urlImages);
+                images = [...images, ...parsedUrls];
+            } catch (e) {
+                // urlImages might be a single URL string
+                if (urlImages && typeof urlImages === 'string') {
+                    images.push(urlImages);
+                }
+            }
+        }
+
         const newDrink = {
             id: Date.now(),
             name: name.trim(),
             description: description.trim(),
-            image: req.file ? `/uploads/${req.file.filename}` : ''
+            images: images,
+            image: images[0] || ''
         };
 
         drinks.push(newDrink);
@@ -108,10 +129,10 @@ app.post('/api/drinks', upload.single('image'), (req, res) => {
 });
 
 // PUT (update) a drink
-app.put('/api/drinks/:id', upload.single('image'), (req, res) => {
+app.put('/api/drinks/:id', upload.array('images', 10), (req, res) => {
     try {
         const { id } = req.params;
-        const { name, description, keepImage } = req.body;
+        const { name, description, urlImages } = req.body;
 
         if (!name || !description) {
             return res.status(400).json({ error: 'Name and description are required' });
@@ -124,19 +145,37 @@ app.put('/api/drinks/:id', upload.single('image'), (req, res) => {
             return res.status(404).json({ error: 'Drink not found' });
         }
 
-        // Delete old image if replacing with new one
-        if (req.file && drinks[drinkIndex].image) {
-            const oldImagePath = path.join(__dirname, 'public', drinks[drinkIndex].image);
-            if (fs.existsSync(oldImagePath)) {
-                fs.unlinkSync(oldImagePath);
+        // Prepare images array
+        let images = [];
+        
+        // Add newly uploaded files
+        if (req.files && req.files.length > 0) {
+            images = req.files.map(file => `/uploads/${file.filename}`);
+        }
+        
+        // Add URL images if provided
+        if (urlImages) {
+            try {
+                const parsedUrls = JSON.parse(urlImages);
+                images = [...images, ...parsedUrls];
+            } catch (e) {
+                if (urlImages && typeof urlImages === 'string') {
+                    images.push(urlImages);
+                }
             }
+        }
+
+        // If no new images provided, keep existing ones
+        if (images.length === 0 && drinks[drinkIndex].images) {
+            images = drinks[drinkIndex].images;
         }
 
         drinks[drinkIndex] = {
             ...drinks[drinkIndex],
             name: name.trim(),
             description: description.trim(),
-            image: req.file ? `/uploads/${req.file.filename}` : (keepImage ? drinks[drinkIndex].image : '')
+            images: images,
+            image: images[0] || ''
         };
 
         writeDrinks(drinks);

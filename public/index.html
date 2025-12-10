@@ -69,32 +69,9 @@
             background-color: #f7fafc;
         }
 
-        .btn-icon {
-            width: 2rem;
-            height: 2rem;
-            padding: 0.25rem;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
         .btn-edit {
             background-color: #3b82f6;
             color: white;
-        }
-
-        .btn-edit:hover {
-            background-color: #2563eb;
-        }
-
-        .btn-delete {
-            background-color: #ef4444;
-            color: white;
-        }
-
-        .btn-delete:hover {
-            background-color: #dc2626;
         }
 
         .form-container {
@@ -140,6 +117,37 @@
             box-shadow: 0 0 0 3px rgba(74, 85, 104, 0.1);
         }
 
+        #drinkImageFile {
+            cursor: pointer;
+        }
+
+        #imagePreview {
+            margin-top: 1rem;
+            display: none;
+        }
+
+        #imagePreview img {
+            max-width: 100%;
+            max-height: 200px;
+            border-radius: 0.5rem;
+            border: 1px solid #e2e8f0;
+        }
+
+        #imagePreview button {
+            margin-top: 0.5rem;
+            padding: 0.5rem 1rem;
+            background-color: #ef4444;
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-size: 0.875rem;
+        }
+
+        #imagePreview button:hover {
+            background-color: #dc2626;
+        }
+
         .form-buttons {
             display: flex;
             gap: 0.75rem;
@@ -181,6 +189,154 @@
             gap: 0.5rem;
             opacity: 0;
             transition: opacity 0.3s;
+            z-index: 20;
+        }
+
+        .btn-icon {
+            width: 3rem;
+            height: 3rem;
+            padding: 0;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-edit {
+            background-color: rgba(107, 114, 128, 0.8);
+            color: white;
+        }
+
+        .btn-edit:hover {
+            background-color: rgba(75, 85, 99, 1);
+            transform: scale(1.1);
+        }
+
+        .btn-delete {
+            background-color: rgba(239, 68, 68, 0.8);
+            color: white;
+        }
+
+        .btn-delete:hover {
+            background-color: rgba(220, 38, 38, 1);
+            transform: scale(1.1);
+        }
+
+        .image-carousel {
+            background: #f7fafc;
+            border-radius: 1rem;
+            aspect-ratio: 1;
+            margin-bottom: 1rem;
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .carousel-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .carousel-images {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .carousel-image {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+        }
+
+        .carousel-image.active {
+            opacity: 1;
+        }
+
+        .carousel-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .carousel-placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #a0aec0;
+            font-size: 0.875rem;
+        }
+
+        .carousel-nav {
+            position: absolute;
+            top: 50%;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            padding: 0 0.5rem;
+            transform: translateY(-50%);
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .carousel-btn {
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            border: none;
+            width: 2rem;
+            height: 2rem;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            transition: all 0.3s;
+            pointer-events: auto;
+        }
+
+        .carousel-btn:hover {
+            background: rgba(0, 0, 0, 0.8);
+        }
+
+        .carousel-dots {
+            position: absolute;
+            bottom: 0.5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 0.5rem;
+            z-index: 10;
+        }
+
+        .dot {
+            width: 0.6rem;
+            height: 0.6rem;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.5);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .dot.active {
+            background: rgba(255, 255, 255, 1);
+            width: 1.2rem;
+            border-radius: 0.3rem;
         }
 
         .image-placeholder {
@@ -265,9 +421,16 @@
                 <input type="text" id="drinkDescription" placeholder="Enter description">
             </div>
             <div class="form-group">
-                <label for="drinkImage">Image URL (optional)</label>
-                <input type="url" id="drinkImage" placeholder="https://example.com/image.jpg">
+                <label for="drinkImageUrl">Add Image URL (optional)</label>
+                <input type="url" id="drinkImageUrl" placeholder="https://example.com/image.jpg">
+                <button type="button" class="btn btn-secondary" onclick="addImageUrl()" style="margin-top: 0.5rem;">Add URL</button>
             </div>
+            <div class="form-group">
+                <label for="drinkImageFile">Upload Image Files (Multiple)</label>
+                <input type="file" id="drinkImageFile" accept="image/*" multiple>
+                <div id="imagePreview"></div>
+            </div>
+            <div id="uploadedImages" style="margin-top: 1rem;"></div>
             <div class="form-buttons">
                 <button class="btn btn-primary" onclick="saveDrink()">
                     <span id="saveButtonText">Add Drink</span>
@@ -290,27 +453,225 @@
         ];
 
         let editingId = null;
+        let selectedFiles = [];
+        let urlImages = [];
+
+        // Handle file selection and preview
+        document.addEventListener('DOMContentLoaded', function() {
+            const fileInput = document.getElementById('drinkImageFile');
+            const imagePreview = document.getElementById('imagePreview');
+
+            fileInput.addEventListener('change', function(e) {
+                selectedFiles = Array.from(e.target.files).filter(file => file.type.startsWith('image/'));
+                updateImagePreview();
+            });
+
+            loadDrinks();
+        });
+
+        function updateImagePreview() {
+            const imagePreview = document.getElementById('imagePreview');
+            
+            if (selectedFiles.length === 0) {
+                imagePreview.innerHTML = '';
+                imagePreview.style.display = 'none';
+                return;
+            }
+
+            let previewHTML = '<div style="margin-top: 1rem;"><h4 style="color: #4a5568; margin-bottom: 0.5rem;">Selected Files:</h4>';
+            selectedFiles.forEach((file, idx) => {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    const existingImg = document.querySelector(`#preview-${idx}`);
+                    if (existingImg) {
+                        existingImg.innerHTML = `
+                            <div style="display: flex; gap: 0.5rem; margin-bottom: 0.5rem; align-items: center;">
+                                <img src="${event.target.result}" alt="Preview" style="max-width: 80px; max-height: 80px; border-radius: 0.5rem; border: 1px solid #e2e8f0;">
+                                <button type="button" onclick="removeSelectedFile(${idx})" style="padding: 0.3rem 0.75rem; background-color: #ef4444; color: white; border: none; border-radius: 0.3rem; cursor: pointer; font-size: 0.75rem;">Remove</button>
+                            </div>
+                        `;
+                    }
+                };
+                reader.readAsDataURL(file);
+            });
+
+            previewHTML += selectedFiles.map((_, idx) => `<div id="preview-${idx}"></div>`).join('');
+            previewHTML += '</div>';
+            imagePreview.innerHTML = previewHTML;
+            imagePreview.style.display = 'block';
+        }
+
+        function removeSelectedFile(index) {
+            selectedFiles = selectedFiles.filter((_, idx) => idx !== index);
+            document.getElementById('drinkImageFile').value = '';
+            updateImagePreview();
+        }
+
+        function addImageUrl() {
+            const urlInput = document.getElementById('drinkImageUrl');
+            const url = urlInput.value.trim();
+
+            if (!url) {
+                alert('Please enter a valid URL');
+                return;
+            }
+
+            if (!url.match(/^https?:\/\/.+\.(jpg|jpeg|png|gif|webp)$/i)) {
+                alert('Please enter a valid image URL');
+                return;
+            }
+
+            urlImages.push(url);
+            urlInput.value = '';
+            renderUploadedImages();
+        }
+
+        function removeUrlImage(index) {
+            urlImages = urlImages.filter((_, idx) => idx !== index);
+            renderUploadedImages();
+        }
+
+        function renderUploadedImages() {
+            const container = document.getElementById('uploadedImages');
+            
+            if (urlImages.length === 0) {
+                container.innerHTML = '';
+                return;
+            }
+
+            container.innerHTML = '<div style="margin-top: 1rem;"><h4 style="color: #4a5568; margin-bottom: 0.5rem;">Added URL Images:</h4>' +
+                urlImages.map((url, idx) => `
+                    <div style="display: flex; gap: 0.5rem; margin-bottom: 0.5rem; align-items: center;">
+                        <img src="${url}" alt="URL Preview" style="max-width: 80px; max-height: 80px; border-radius: 0.5rem; border: 1px solid #e2e8f0;">
+                        <button type="button" onclick="removeUrlImage(${idx})" style="padding: 0.3rem 0.75rem; background-color: #ef4444; color: white; border: none; border-radius: 0.3rem; cursor: pointer; font-size: 0.75rem;">Remove</button>
+                    </div>
+                `).join('') + '</div>';
+        }
+
+        // Carousel navigation functions
+        function getCarouselState(drinkId) {
+            const container = document.getElementById(`images-${drinkId}`);
+            if (!container) return { current: 0, total: 0 };
+            
+            const images = container.querySelectorAll('.carousel-image');
+            const activeIndex = Array.from(images).findIndex(img => img.classList.contains('active'));
+            
+            return {
+                current: activeIndex >= 0 ? activeIndex : 0,
+                total: images.length
+            };
+        }
+
+        function showImage(drinkId, index) {
+            const container = document.getElementById(`images-${drinkId}`);
+            if (!container) return;
+
+            const images = container.querySelectorAll('.carousel-image');
+            const dots = document.querySelectorAll(`#dots-${drinkId} .dot`);
+
+            images.forEach(img => img.classList.remove('active'));
+            dots.forEach(dot => dot.classList.remove('active'));
+
+            if (images[index]) {
+                images[index].classList.add('active');
+            }
+            if (dots[index]) {
+                dots[index].classList.add('active');
+            }
+        }
+
+        function nextImage(drinkId) {
+            const state = getCarouselState(drinkId);
+            const nextIndex = (state.current + 1) % state.total;
+            showImage(drinkId, nextIndex);
+        }
+
+        function prevImage(drinkId) {
+            const state = getCarouselState(drinkId);
+            const prevIndex = (state.current - 1 + state.total) % state.total;
+            showImage(drinkId, prevIndex);
+        }
+
+        function goToImage(drinkId, index) {
+            showImage(drinkId, index);
+        }
 
         function renderDrinks() {
             const grid = document.getElementById('drinksGrid');
-            grid.innerHTML = drinks.map(drink => `
-                <div class="drink-card">
-                    <div class="card-actions">
-                        <button class="btn btn-icon btn-edit" onclick="editDrink(${drink.id})">
-                            ✏️
-                        </button>
-                        <button class="btn btn-icon btn-delete" onclick="deleteDrink(${drink.id})">
-                            ✕
-                        </button>
+            grid.innerHTML = drinks.map(drink => {
+                const images = drink.images && drink.images.length > 0 ? drink.images : (drink.image ? [drink.image] : []);
+                const hasImages = images.length > 0;
+                
+                return `
+                    <div class="drink-card">
+                        <div class="image-carousel" id="carousel-${drink.id}">
+                            <div class="card-actions">
+                                <button class="btn btn-icon btn-edit" onclick="editDrink(${drink.id})" title="Edit">
+                                    ✎
+                                </button>
+                                <button class="btn btn-icon btn-delete" onclick="deleteDrink(${drink.id})" title="Delete">
+                                    🗑
+                                </button>
+                            </div>
+                            <div class="carousel-container">
+                                <div class="carousel-images" id="images-${drink.id}">
+                                    ${hasImages ? images.map((img, idx) => `
+                                        <div class="carousel-image ${idx === 0 ? 'active' : ''}">
+                                            <img src="${img}" alt="${drink.name}">
+                                        </div>
+                                    `).join('') : `<div class="carousel-placeholder">No images</div>`}
+                                </div>
+                                ${images.length > 1 ? `
+                                    <div class="carousel-nav">
+                                        <button class="carousel-btn" onclick="prevImage(${drink.id})">❮</button>
+                                        <button class="carousel-btn" onclick="nextImage(${drink.id})">❯</button>
+                                    </div>
+                                    <div class="carousel-dots" id="dots-${drink.id}">
+                                        ${images.map((_, idx) => `
+                                            <div class="dot ${idx === 0 ? 'active' : ''}" onclick="goToImage(${drink.id}, ${idx})"></div>
+                                        `).join('')}
+                                    </div>
+                                ` : ''}
+                            </div>
+                        </div>
+                        <h3 class="drink-name">${drink.name}</h3>
+                        <p class="drink-description">${drink.description}</p>
+                        <div class="corner-decoration"></div>
                     </div>
-                    <div class="image-placeholder">
-                        ${drink.image ? `<img src="${drink.image}" alt="${drink.name}">` : 'Placeholder for image'}
-                    </div>
-                    <h3 class="drink-name">${drink.name}</h3>
-                    <p class="drink-description">${drink.description}</p>
-                    <div class="corner-decoration"></div>
-                </div>
-            `).join('');
+                `;
+            }).join('');
+        }
+
+        // Handle file selection and preview
+        document.addEventListener('DOMContentLoaded', function() {
+            const fileInput = document.getElementById('drinkImageFile');
+            const imagePreview = document.getElementById('imagePreview');
+
+            fileInput.addEventListener('change', function(e) {
+                selectedFile = e.target.files[0];
+                if (selectedFile && selectedFile.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = function(event) {
+                        imagePreview.innerHTML = `
+                            <img src="${event.target.result}" alt="Preview">
+                            <button type="button" onclick="clearFileInput()">Remove Image</button>
+                        `;
+                        imagePreview.style.display = 'block';
+                    };
+                    reader.readAsDataURL(selectedFile);
+                } else {
+                    selectedFile = null;
+                    imagePreview.style.display = 'none';
+                }
+            });
+
+            loadDrinks();
+        });
+
+        function clearFileInput() {
+            selectedFile = null;
+            document.getElementById('drinkImageFile').value = '';
+            document.getElementById('imagePreview').style.display = 'none';
         }
 
         function toggleForm() {
@@ -324,10 +685,15 @@
         function clearForm() {
             document.getElementById('drinkName').value = '';
             document.getElementById('drinkDescription').value = '';
-            document.getElementById('drinkImage').value = '';
+            document.getElementById('drinkImageUrl').value = '';
+            document.getElementById('drinkImageFile').value = '';
+            document.getElementById('imagePreview').style.display = 'none';
+            document.getElementById('uploadedImages').innerHTML = '';
             document.getElementById('formTitle').textContent = 'Add New Drink';
             document.getElementById('saveButtonText').textContent = 'Add Drink';
             editingId = null;
+            selectedFiles = [];
+            urlImages = [];
         }
 
         function cancelForm() {
@@ -335,33 +701,90 @@
             clearForm();
         }
 
-        function saveDrink() {
+        async function saveDrink() {
             const name = document.getElementById('drinkName').value.trim();
             const description = document.getElementById('drinkDescription').value.trim();
-            const image = document.getElementById('drinkImage').value.trim();
 
             if (!name || !description) {
                 alert('Please fill in both name and description');
                 return;
             }
 
-            if (editingId) {
-                drinks = drinks.map(drink => 
-                    drink.id === editingId 
-                        ? { ...drink, name, description, image }
-                        : drink
-                );
-            } else {
-                drinks.push({
-                    id: Date.now(),
-                    name,
-                    description,
-                    image
-                });
-            }
+            try {
+                // Combine all images (from URL and uploaded files)
+                let allImages = [...urlImages];
 
-            renderDrinks();
-            cancelForm();
+                // If files are selected, upload them
+                if (selectedFiles.length > 0) {
+                    const formData = new FormData();
+                    selectedFiles.forEach(file => {
+                        formData.append('images', file);
+                    });
+                    formData.append('name', name);
+                    formData.append('description', description);
+                    formData.append('urlImages', JSON.stringify(urlImages));
+
+                    const url = editingId 
+                        ? `/api/drinks/${editingId}`
+                        : '/api/drinks';
+                    const method = editingId ? 'PUT' : 'POST';
+
+                    const response = await fetch(url, {
+                        method: method,
+                        body: formData
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Failed to save drink');
+                    }
+
+                    const result = await response.json();
+                    if (result.images) {
+                        allImages = result.images;
+                    }
+                }
+
+                // Update local state
+                if (editingId) {
+                    drinks = drinks.map(drink => 
+                        drink.id === editingId 
+                            ? { ...drink, name, description, images: allImages, image: allImages[0] || '' }
+                            : drink
+                    );
+                } else {
+                    drinks.push({
+                        id: Date.now(),
+                        name,
+                        description,
+                        images: allImages,
+                        image: allImages[0] || ''
+                    });
+                }
+
+                renderDrinks();
+                clearForm();
+            } catch (error) {
+                console.error('Error:', error);
+                // Fallback to local storage
+                const allImages = [...urlImages];
+                if (editingId) {
+                    drinks = drinks.map(drink => 
+                        drink.id === editingId 
+                            ? { ...drink, name, description, images: allImages, image: allImages[0] || '' }
+                            : drink
+                    );
+                } else {
+                    drinks.push({
+                        id: Date.now(),
+                        name,
+                        description,
+                        images: allImages,
+                        image: allImages[0] || ''
+                    });
+                }
+                renderDrinks();
+                clearForm();
+            }
         }
 
         function editDrink(id) {
@@ -370,21 +793,37 @@
 
             document.getElementById('drinkName').value = drink.name;
             document.getElementById('drinkDescription').value = drink.description;
-            document.getElementById('drinkImage').value = drink.image;
+            document.getElementById('drinkImageUrl').value = '';
+            document.getElementById('drinkImageFile').value = '';
+            document.getElementById('imagePreview').style.display = 'none';
+            document.getElementById('uploadedImages').innerHTML = '';
             document.getElementById('formTitle').textContent = 'Edit Drink';
             document.getElementById('saveButtonText').textContent = 'Update Drink';
             document.getElementById('formContainer').classList.remove('hidden');
             editingId = id;
+            selectedFiles = [];
+            urlImages = [];
+
+            // Show existing images if they exist
+            if (drink.images && drink.images.length > 0) {
+                urlImages = [...drink.images];
+                renderUploadedImages();
+            }
         }
 
         function deleteDrink(id) {
             if (confirm('Are you sure you want to delete this drink?')) {
+                try {
+                    fetch(`/api/drinks/${id}`, { method: 'DELETE' }).catch(() => {});
+                } catch (error) {
+                    console.error('Error:', error);
+                }
                 drinks = drinks.filter(drink => drink.id !== id);
                 renderDrinks();
             }
         }
 
-        renderDrinks();
+        loadDrinks();
     </script>
 </body>
 </html>
