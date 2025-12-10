@@ -1,0 +1,38 @@
+[
+  {
+    "id": 1,
+    "name": "Espresso",
+    "description": "Rich and bold single shot of concentrated coffee",
+    "image": ""
+  },
+  {
+    "id": 2,
+    "name": "Cappuccino",
+    "description": "Smooth espresso with perfectly steamed milk and velvety foam",
+    "image": ""
+  },
+  {
+    "id": 3,
+    "name": "Latte",
+    "description": "Creamy espresso with steamed milk for that perfect balance",
+    "image": ""
+  },
+  {
+    "id": 4,
+    "name": "Mocha",
+    "description": "Delicious blend of chocolate and espresso with steamed milk",
+    "image": ""
+  },
+  {
+    "id": 5,
+    "name": "Americano",
+    "description": "Bold espresso shots topped with hot water for a smooth finish",
+    "image": ""
+  },
+  {
+    "id": 6,
+    "name": "Macchiato",
+    "description": "Espresso marked with just a touch of milk foam",
+    "image": ""
+  }
+]
