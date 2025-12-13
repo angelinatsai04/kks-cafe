@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>KK's Cafe</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -24,10 +27,14 @@
         }
 
         h1 {
-            font-size: 3rem;
+            font-family: 'Playfair Display', serif;
+            font-size: 4rem;
+            font-weight: 400;
             color: #4a5568;
             text-align: center;
             margin-bottom: 3rem;
+            letter-spacing: 3px;
+            text-transform: lowercase;
         }
 
         .controls {
@@ -234,6 +241,7 @@
 
         @media (max-width: 768px) {
             h1 {
+                font-family: 'Playfair Display', serif;
                 font-size: 2rem;
             }
 

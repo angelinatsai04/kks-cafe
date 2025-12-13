@@ -217,7 +217,19 @@ app.delete('/api/drinks/:id', (req, res) => {
 // Serve static files from uploads
 app.use('/uploads', express.static(uploadsDir));
 
-// Start server
-app.listen(PORT, HOST, () => {
+// Start server with error handling for common listen errors (EADDRINUSE)
+const server = app.listen(PORT, HOST, () => {
     console.log(`KK's Cafe server running on http://${HOST}:${PORT}`);
+});
+
+server.on('error', (err) => {
+    if (err && err.code === 'EADDRINUSE') {
+        console.error(`\nError: Port ${PORT} is already in use.`);
+        console.error('Possible fixes:');
+        console.error(`  • Find and stop the process using the port: lsof -i :${PORT}  (then kill PID)`);
+        console.error(`  • Start the app on a different port: PORT=3000 npm start`);
+        console.error('Exiting.');
+        process.exit(1);
+    }
+    console.error('Server error:', err);
 });
