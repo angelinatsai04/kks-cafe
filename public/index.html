@@ -504,6 +504,7 @@
         let editingId = null;
         let selectedFiles = [];
         let urlImages = [];
+        let existingImages = [];  // Track existing images when editing
 
         // Handle file selection and preview
         document.addEventListener('DOMContentLoaded', function() {
@@ -576,7 +577,14 @@
         }
 
         function removeUrlImage(index) {
+            const removedImage = urlImages[index];
             urlImages = urlImages.filter((_, idx) => idx !== index);
+            
+            // Also remove from existingImages if it was there
+            if (existingImages.includes(removedImage)) {
+                existingImages = existingImages.filter(img => img !== removedImage);
+            }
+            
             renderUploadedImages();
         }
 
@@ -753,6 +761,7 @@
             editingId = null;
             selectedFiles = [];
             urlImages = [];
+            existingImages = [];
         }
 
         function cancelForm() {
@@ -770,18 +779,24 @@
             }
 
             try {
-                // Combine all images (from URL and uploaded files)
+                // Use urlImages as the base (includes existing images that weren't removed + any new URLs added)
                 let allImages = [...urlImages];
 
-                // If files are selected, upload them
-                if (selectedFiles.length > 0) {
+                // If files are selected OR editing, send to server
+                if (selectedFiles.length > 0 || editingId) {
                     const formData = new FormData();
                     selectedFiles.forEach(file => {
                         formData.append('images', file);
                     });
                     formData.append('name', name);
                     formData.append('description', description);
-                    formData.append('urlImages', JSON.stringify(urlImages));
+                    
+                    // Send the current state: existing images (after removals) + new URL images
+                    const newUrlImages = urlImages.filter(img => !existingImages.includes(img));
+                    const keptExistingImages = urlImages.filter(img => existingImages.includes(img));
+                    
+                    formData.append('keptExistingImages', JSON.stringify(keptExistingImages));
+                    formData.append('urlImages', JSON.stringify(newUrlImages));
 
                     const url = editingId 
                         ? `/api/drinks/${editingId}`
@@ -801,7 +816,7 @@
                     if (result.images) {
                         allImages = result.images;
                     }
-                }
+                } 
 
                 // Update local state
                 if (editingId) {
@@ -826,7 +841,7 @@
             } catch (error) {
                 console.error('Error:', error);
                 // Fallback to local storage
-                const allImages = [...urlImages];
+                let allImages = [...urlImages];
                 if (editingId) {
                     drinks = drinks.map(drink => 
                         drink.id === editingId 
@@ -864,10 +879,12 @@
             editingId = id;
             selectedFiles = [];
             urlImages = [];
+            existingImages = [];  // Reset existing images
 
             // Show existing images if they exist
             if (drink.images && drink.images.length > 0) {
-                urlImages = [...drink.images];
+                existingImages = [...drink.images];  // Store original images
+                urlImages = [...drink.images];  // Show them in the form
                 renderUploadedImages();
             }
         }

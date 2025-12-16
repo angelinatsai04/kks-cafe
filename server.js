@@ -133,7 +133,7 @@ app.post('/api/drinks', upload.array('images', 10), (req, res) => {
 app.put('/api/drinks/:id', upload.array('images', 10), (req, res) => {
     try {
         const { id } = req.params;
-        const { name, description, urlImages } = req.body;
+        const { name, description, urlImages, keptExistingImages } = req.body;
 
         if (!name || !description) {
             return res.status(400).json({ error: 'Name and description are required' });
@@ -149,12 +149,22 @@ app.put('/api/drinks/:id', upload.array('images', 10), (req, res) => {
         // Prepare images array
         let images = [];
         
-        // Add newly uploaded files
-        if (req.files && req.files.length > 0) {
-            images = req.files.map(file => `/uploads/${file.filename}`);
+        // Start with kept existing images (images that weren't removed)
+        if (keptExistingImages) {
+            try {
+                const keptImages = JSON.parse(keptExistingImages);
+                images = [...keptImages];
+            } catch (e) {
+                // keptExistingImages might be empty or malformed
+            }
         }
         
-        // Add URL images if provided
+        // Add newly uploaded files
+        if (req.files && req.files.length > 0) {
+            images = [...images, ...req.files.map(file => `/uploads/${file.filename}`)];
+        }
+        
+        // Add new URL images if provided
         if (urlImages) {
             try {
                 const parsedUrls = JSON.parse(urlImages);
@@ -166,7 +176,7 @@ app.put('/api/drinks/:id', upload.array('images', 10), (req, res) => {
             }
         }
 
-        // If no new images provided, keep existing ones
+        // If no images at all, keep existing ones (safety fallback)
         if (images.length === 0 && drinks[drinkIndex].images) {
             images = drinks[drinkIndex].images;
         }
