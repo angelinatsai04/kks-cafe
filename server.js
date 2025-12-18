@@ -196,6 +196,37 @@ app.put('/api/drinks/:id', upload.array('images', 10), (req, res) => {
     }
 });
 
+// POST reorder drinks
+app.post('/api/reorder', (req, res) => {
+    try {
+        const { order } = req.body;
+
+        if (!order || !Array.isArray(order)) {
+            return res.status(400).json({ error: 'Order array is required' });
+        }
+
+        const drinks = readDrinks();
+        
+        // Create a map of drinks by ID for quick lookup
+        const drinkMap = {};
+        drinks.forEach(drink => {
+            drinkMap[drink.id] = drink;
+        });
+
+        // Reorder drinks based on the provided order array
+        const reorderedDrinks = order
+            .map(id => drinkMap[id])
+            .filter(drink => drink !== undefined);
+
+        // Write the reordered drinks back to the file
+        writeDrinks(reorderedDrinks);
+
+        res.json({ message: 'Drinks reordered successfully', drinks: reorderedDrinks });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
 // DELETE a drink
 app.delete('/api/drinks/:id', (req, res) => {
     try {

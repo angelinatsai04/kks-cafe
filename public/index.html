@@ -179,12 +179,26 @@
             border-radius: 1.5rem;
             padding: 1.5rem;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            transition: box-shadow 0.3s;
+            transition: box-shadow 0.3s, opacity 0.2s;
             position: relative;
+            cursor: grab;
+        }
+
+        .drink-card:active {
+            cursor: grabbing;
         }
 
         .drink-card:hover {
             box-shadow: 0 20px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .drink-card.dragging {
+            opacity: 0.5;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .drink-card.drag-over {
+            box-shadow: 0 0 0 3px #3b82f6;
         }
 
         .drink-card:hover .card-actions {
@@ -653,6 +667,102 @@
             showImage(drinkId, index);
         }
 
+        // Drag and drop functionality
+        let draggedElement = null;
+
+        function attachDragListeners() {
+            const cards = document.querySelectorAll('.drink-card');
+            
+            cards.forEach(card => {
+                card.addEventListener('dragstart', handleDragStart);
+                card.addEventListener('dragend', handleDragEnd);
+                card.addEventListener('dragover', handleDragOver);
+                card.addEventListener('drop', handleDrop);
+                card.addEventListener('dragleave', handleDragLeave);
+            });
+        }
+
+        function handleDragStart(e) {
+            draggedElement = this;
+            this.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/html', this.innerHTML);
+        }
+
+        function handleDragEnd(e) {
+            draggedElement = null;
+            this.classList.remove('dragging');
+            
+            const cards = document.querySelectorAll('.drink-card');
+            cards.forEach(card => {
+                card.classList.remove('drag-over');
+            });
+        }
+
+        function handleDragOver(e) {
+            if (e.preventDefault) {
+                e.preventDefault();
+            }
+            
+            e.dataTransfer.dropEffect = 'move';
+            
+            if (this !== draggedElement) {
+                this.classList.add('drag-over');
+            }
+            
+            return false;
+        }
+
+        function handleDragLeave(e) {
+            if (e.target === this) {
+                this.classList.remove('drag-over');
+            }
+        }
+
+        function handleDrop(e) {
+            if (e.stopPropagation) {
+                e.stopPropagation();
+            }
+            
+            if (draggedElement !== this) {
+                // Swap the order in the drinks array
+                const draggedId = parseInt(draggedElement.dataset.drinkId);
+                const targetId = parseInt(this.dataset.drinkId);
+                
+                const draggedIndex = drinks.findIndex(d => d.id === draggedId);
+                const targetIndex = drinks.findIndex(d => d.id === targetId);
+                
+                if (draggedIndex !== -1 && targetIndex !== -1) {
+                    // Swap the drinks
+                    [drinks[draggedIndex], drinks[targetIndex]] = [drinks[targetIndex], drinks[draggedIndex]];
+                    
+                    // Save the new order to the server
+                    saveOrder();
+                    
+                    // Re-render the drinks
+                    renderDrinks();
+                }
+            }
+            
+            this.classList.remove('drag-over');
+            return false;
+        }
+
+        function saveOrder() {
+            // Extract just the IDs in the new order
+            const newOrder = drinks.map(drink => drink.id);
+            
+            // Send the new order to the server
+            fetch('/api/reorder', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ order: newOrder })
+            })
+            .catch(error => console.error('Error saving order:', error));
+        }
+
         function renderDrinks() {
             const grid = document.getElementById('drinksGrid');
             grid.innerHTML = drinks.map(drink => {
@@ -660,7 +770,7 @@
                 const hasImages = images.length > 0;
                 
                 return `
-                    <div class="drink-card">
+                    <div class="drink-card" draggable="true" data-drink-id="${drink.id}">
                         <div class="image-carousel" id="carousel-${drink.id}">
                             <div class="card-actions">
                                 <button class="btn btn-icon btn-edit" onclick="editDrink(${drink.id})" title="Edit">
@@ -697,6 +807,9 @@
                     </div>
                 `;
             }).join('');
+            
+            // Attach drag event listeners
+            attachDragListeners();
         }
 
         // Handle file selection and preview
